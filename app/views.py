@@ -1,13 +1,26 @@
 from flask import render_template 
-# this function takes a template name and a variable list of parameters and returns 
-# the rendered template with all arguments in place, it invokes Jinja2 templating 
-# engine under the hood
 from app import app
 
 @app.route('/')
 @app.route('/index')
 def index():
     user = {'nickname': 'Miguel'} # fake user
+    posts = [ # fake list of posts
+        {
+            'author': {'nickname':'John'},
+            'body': "Beautiful day in Portland!"
+        },
+        {
+            'author': {'nickname':'Susan'},
+            'body': "The Avengers movie was so cool!"
+        },
+        {   
+            'author': {'nickname':'Kate'},
+            'body': "Kate from base, how can I help?"
+        }
+    ]
+    
     return render_template('index.html',
-        title = None,
-        user = user)
+        title = 'Home',
+        user = user,
+        posts = posts)
