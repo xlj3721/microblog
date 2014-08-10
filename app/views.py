@@ -9,5 +9,5 @@ from app import app
 def index():
     user = {'nickname': 'Miguel'} # fake user
     return render_template('index.html',
-        title = 'Home',
+        title = None,
         user = user)
