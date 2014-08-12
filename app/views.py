@@ -33,7 +33,7 @@ def index():
 # default is just GET
 
 def login():
-    form = LoginForm()
+    form = LoginForm() # the class LoginForm() imported from forms.py
     
     if form.validate_on_submit():
         # validate_on_submit function will be False if form is empty, if form is filled
