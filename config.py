@@ -10,8 +10,12 @@ OPENID_PROVIDERS = [
 
 
 import os
-basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = os.path.abspath(os.path.dirname(__file__)) 
+# dirname name gets the firstpart of the file and abspath makes it an absolute ref
+# in this case /home/dcreekp/microblog
 
-SQLACHEMY_DATABASE+URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
-SQLACHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
-                                             
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
+# join function joins the parts /home/dcreekp/microblog and app.db
+# all up sqlite:////home/dcreekp/microblog/app.db
+SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
+# looks like /home/dcreekp/microblog/db_repository                                   
