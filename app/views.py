@@ -1,6 +1,8 @@
-from flask import render_template, flash, redirect
-from app import app # import the __init__  in /app
+from flask import render_template, flash, redirect, session, url_for, request, g
+from flask.ext.login import login_user, logout_user, current_user, login_required
+from app import app, db, lm, oid # import the object app from __init__.py
 from forms import LoginForm
+from models import User, ROLE_USER, ROLE_ADMIN
 
 @app.route('/')
 @app.route('/index')
@@ -31,18 +33,27 @@ def index():
 @app.route('/login/', methods = ['GET', 'POST']) 
 # methods tells Flask that this view function accepts GET and POST requests
 # default is just GET
+@oid.loginhandler
+# tells Flask-OpenID that this is our login view function
 
 def login():
+
+    if g.user is not None and g.user.is_authenticated():
+        # if g.user is already set as an authenticated user, no need to login again
+        # g global is a setup by flask as a place to store/share data during the 
+        # life of a request
+        return redirect(url_for('index')) # url_for function lets flask generate the url
+         
+
     form = LoginForm() # the class LoginForm() imported from forms.py
     
     if form.validate_on_submit():
-        # validate_on_submit function will be False if form is empty, if form is filled
-        # and valid (True) Flask will gather the data, invalid fill (False)
-        flash('Login requested for OpenID="' + form.openid.data + '", remember_me=' +
-        str(form.remember_me.data))
-        # flash function is a quick way to show a message
-        return redirect('/index')
-        
+        session['remember_me'] = form.remember_me.data
+        # once data is stored in flask.session it will be available during the that request
+        # and any future requests made by the same client 
+        return oid.try_login(form.openid.data, ask_for = ['nickname', 'email'])
+        # openid function triggers authentication, takes 2 arguments; openid and list of data
+
     return render_template('login.html',
         title = 'Sign In',
         form = form,
