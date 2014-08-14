@@ -1,5 +1,5 @@
 from flask import render_template, flash, redirect
-from app import app
+from app import app # import the __init__  in /app
 from forms import LoginForm
 
 @app.route('/')
@@ -47,3 +47,10 @@ def login():
         title = 'Sign In',
         form = form,
         providers = app.config['OPENID_PROVIDERS'])
+
+@lm.user_loader
+def load_user(id):
+    # loads a user from the database, conversion from Flask_login unicode string to 
+    # integer is necessary
+    return User.query.get(int(id)) 
+    
