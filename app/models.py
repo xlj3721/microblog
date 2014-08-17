@@ -4,7 +4,7 @@ ROLE_USER = 0
 ROLE_ADMIN = 1
 
 class User(db.Model):
-    """ attributes for the User database """
+	""" attributes for the User database """
 	id = db.Column(db.Integer, primary_key = True)
 	nickname = db.Column(db.String(64), index = True, unique = True)
 	email = db.Column(db.String(120), index = True, unique = True)
@@ -15,19 +15,19 @@ class User(db.Model):
 	def __repr__(self):
 		return "<User %r>" % (self.nickname)
 
-    """ methods for the Flask_login extension """
+	""" methods for the Flask_login extension """
 
-    def is_authenticated(self):
-        return True
+	def is_authenticated(self):
+	    return True
 
-    def is_active(self):
-        return True
+	def is_active(self):
+	    return True
 
-    def is_anonymous(self):
-        return False
+	def is_anonymous(self):
+	    return False
 
-    def get_id(self):
-        return unicode(self.id)
+	def get_id(self):
+	    return unicode(self.id)
 
 		
 class Post(db.Model):
