@@ -4,11 +4,21 @@ from app import app, db, lm, oid # import the object app, db, lm, oid from __ini
 from forms import LoginForm
 from models import User, ROLE_USER, ROLE_ADMIN
 
+@app.before_request
+# any function decorated with before_request runs before the view function for every request
+def before_request():
+	# g is a global setup by Flask, current_user isa global setup by Flask_Login
+	# g global is a place to store/share data during the life of a request
+	g.user = current_user
+	# gives better access; all requests can access the logged in user even inside templates
+	# a global within Flask_login just got made into a global within Flask the entire app
+
+
 @app.route('/')
 @app.route('/index')
-
+@login_required # ensures page will only be seen by logged in users
 def index():
-    user = {'nickname': 'Miguel'} # fake user
+    user = g.user
     posts = [ # fake list of posts
         {
             'author': {'nickname':'John'},
@@ -29,20 +39,12 @@ def index():
         user = user,
         posts = posts)
 
+
 @lm.user_loader
 def load_user(id):
     # loads a user from the database, to be used by Flask-Login, converting Flask_login
     # unicode string to integer is necessary
     return User.query.get(int(id)) 
-
-@app.before_request
-# any function decorated with before_request runs before the view function for every request
-def before_request():
-	# g is a global setup by Flask, current_user isa global setup by Flask_Login
-	# g global is a place to store/share data during the life of a request
-	g.user = current_user
-	# gives better access; all requests can access the logged in user even inside templates
-	# a global within Flask_login just got made into a global within Flask the entire app
 
 
 @app.route('/login', methods = ['GET', 'POST']) 
@@ -70,6 +72,7 @@ def login():
         title = 'Sign In',
         form = form,
         providers = app.config['OPENID_PROVIDERS'])
+
 
 @oid.after_login
 def after_login(resp):
