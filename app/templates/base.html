@@ -7,9 +7,15 @@
         {% endif %}
     </head>
     <body>
-        <div>Microblog: <a href='/index'>Home</a></div>
+        <div>Microblog: 
+            <a href="{{ url_for('index') }}">Home</a>  <!--a Flask function imported to views.py -->
+            {% if g.user.is_authenticated() %}    <!--g is a Flask global, assigned to a Flask-Login global which has-a db method -->
+            | <a href="{{ url_for('logout') }}">Logout</a>
+            {% endif %}
+        </div>
+
         <hr>
-        {% with message = get_flashed_messages() %}
+        {% with message = get_flashed_messages() %} <!--a Flask function imported to views.py -->
         {% if messages %}
         <ul>
         {% for message in messages %}

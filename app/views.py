@@ -7,7 +7,7 @@ from models import User, ROLE_USER, ROLE_ADMIN
 @app.before_request
 # any function decorated with before_request runs before the view function for every request
 def before_request():
-	# g is a global setup by Flask, current_user isa global setup by Flask_Login
+	# g is a global setup by Flask, current_user is a global setup by Flask_Login
 	# g global is a place to store/share data during the life of a request
 	g.user = current_user
 	# gives better access; all requests can access the logged in user even inside templates
@@ -112,4 +112,10 @@ def after_login(resp):
 	return redirect(request.args.get('next') or url_for('index'))
 	# redirect back to the view which sent the user to the login view or to the index view 
 
+
+@app.route('/logout')
+def logout():
+	logout_user()
+	# Flask_Login function to logout; that's all
+	return redirect(url_for('index'))
 
