@@ -29,19 +29,31 @@ def index():
         user = user,
         posts = posts)
 
+@lm.user_loader
+def load_user(id):
+    # loads a user from the database, to be used by Flask-Login, converting Flask_login
+    # unicode string to integer is necessary
+    return User.query.get(int(id)) 
+
+@app.before_request
+# any function decorated with before_request runs before the view function for every request
+def before_request():
+	# g is a global setup by Flask, current_user isa global setup by Flask_Login
+	# g global is a place to store/share data during the life of a request
+	g.user = current_user
+	# gives better access; all requests can access the logged in user even inside templates
+	# a global within Flask_login just got made into a global within Flask the entire app
+
 
 @app.route('/login', methods = ['GET', 'POST']) 
 # methods tells Flask that this view function accepts GET and POST requests
 # default is just GET
 @oid.loginhandler
 # tells Flask-OpenID that this is our login view function
-
 def login():
 
     if g.user is not None and g.user.is_authenticated():
         # if g.user is already set as an authenticated user, no need to login again
-        # g global is a setup by flask as a place to store/share data during the 
-        # life of a request
         return redirect(url_for('index')) # url_for function lets flask generate the url
          
 
@@ -95,12 +107,6 @@ def after_login(resp):
 	login_user(user, remember = remember_me)
 	# Flask-Login function to register a valid login
 	return redirect(request.args.get('next') or url_for('index'))
-	# tells flask to redirect 
+	# redirect back to the view which sent the user to the login view or to the index view 
 
 
-@lm.user_loader
-def load_user(id):
-    # loads a user from the database, conversion from Flask_login unicode string to 
-    # integer is necessary
-    return User.query.get(int(id)) 
-    
