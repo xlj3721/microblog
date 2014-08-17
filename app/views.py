@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from app import app, db, lm, oid # import the object app from __init__.py
+from app import app, db, lm, oid # import the object app, db, lm, oid from __init__.py
 from forms import LoginForm
 from models import User, ROLE_USER, ROLE_ADMIN
 
@@ -30,7 +30,7 @@ def index():
         posts = posts)
 
 
-@app.route('/login/', methods = ['GET', 'POST']) 
+@app.route('/login', methods = ['GET', 'POST']) 
 # methods tells Flask that this view function accepts GET and POST requests
 # default is just GET
 @oid.loginhandler
@@ -58,6 +58,45 @@ def login():
         title = 'Sign In',
         form = form,
         providers = app.config['OPENID_PROVIDERS'])
+
+@oid.after_login
+def after_login(resp):
+	# resp contains information returned by the OpenID provider
+
+	if resp.email is None or resp.email == "":
+	# checking for email otherwise cannot log the user in
+		flash("Invalid login. Please try again.")
+		return redirect(url_for('login'))
+
+	user = User.query.filter_by(email = resp.email).first()
+	# searches the db for the provided email
+
+	if user is None:
+	# if nothing found, new user is added
+		nickname = resp.nickname
+		
+		if nickname is None or nickname == "":
+		# if the new user doesn't have nickname, one is pulled from their email address
+			nickname = resp.email.split('@')[0] # name@email.com becomes ['name', 'email.com']
+
+		user = User(nickname = nickname, email = resp.email, role = ROLE_USER)
+		# added into the db through User() imported from models.py 
+		db.session.add(user)
+		db.session.commit()
+
+	remember_me = False
+	# sets the LoginForm().remember_me
+
+	if 'remember_me' in session:
+		# if there is a remember_me key in session dict, it resets LoginForm().remember_me and then pops it
+		remember_me = session['remember_me']
+		session.pop('remember_me', None)
+
+	login_user(user, remember = remember_me)
+	# Flask-Login function to register a valid login
+	return redirect(request.args.get('next') or url_for('index'))
+	# tells flask to redirect 
+
 
 @lm.user_loader
 def load_user(id):
