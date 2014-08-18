@@ -1,4 +1,4 @@
-#! flask/bin/python
+#! flask_venv/bin/python
 """
     incorporating a model into the db is a migration
 """
