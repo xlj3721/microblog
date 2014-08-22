@@ -119,3 +119,21 @@ def logout():
 	# Flask_Login function to logout; that's all
 	return redirect(url_for('index'))
 
+@app.route('/user/<nickname>') # takes an argument nickname, and is passed to the user function
+@login_required
+def user(nickname):
+    # looks for the user in database and if not found,; redirects
+    user = User.query.filter_by(nickname = nickname).first()
+
+    if user == None: 
+        flash('User' + nickname + ' not found.')
+        return redirect(url_for('index'))
+
+    posts = [   # fake posts but correct user
+        { 'author': user, 'body': "Test post #1"},
+        { 'author': user, 'body': "Test post #2"}
+    ]
+
+    return render_template('user.html',
+        user = user,
+        posts = posts)
