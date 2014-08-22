@@ -10,6 +10,7 @@
         <div>Microblog: 
             <a href="{{ url_for('index') }}">Home</a>  <!--a Flask function imported to views.py -->
             {% if g.user.is_authenticated() %}    <!--g is a Flask global, assigned to a Flask-Login global which has-a db method -->
+            | <a href="{{ url_for('user', nickname = g.user.nickname) }}">Your Profile</a> <!-- also needs the nickname argument -->
             | <a href="{{ url_for('logout') }}">Logout</a>
             {% endif %}
         </div>
