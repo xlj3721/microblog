@@ -1,4 +1,5 @@
 from app import db
+from hashlib import md5	# constructs a secure hash 
 
 ROLE_USER = 0
 ROLE_ADMIN = 1
@@ -14,6 +15,10 @@ class User(db.Model):
 
 	def __repr__(self):
 		return "<User %r>" % (self.nickname)
+
+	def avatar(self, size):
+		# returns the url of the user's avatar image with some options
+		return 'http://www.gravatar.com/avatar/' + md5(self.email).hexdigest() + '?d=mm&s=' + str(size)
 
 	""" methods for the Flask_login extension """
 
