@@ -2,12 +2,13 @@ from datetime import datetime
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid # import the object app, db, lm, oid from __init__.py
-from forms import LoginForm
+from forms import LoginForm, EditForm
 from models import User, ROLE_USER, ROLE_ADMIN
 
 
 @app.before_request
 # any function decorated with before_request runs before the view function for every request
+
 def before_request():
 	# g is a global setup by Flask, current_user is a global setup by Flask_Login
 	# g global is a place to store/share data during the life of a request
@@ -21,9 +22,11 @@ def before_request():
         db.session.add(g.user)
         db.session.commit()
 
+
 @app.route('/')
 @app.route('/index')
 @login_required # ensures page will only be seen by logged in users
+
 def index():
     user = g.user
     posts = [ # fake list of posts
@@ -48,6 +51,7 @@ def index():
 
 
 @lm.user_loader
+
 def load_user(id):
     # loads a user from the database, to be used by Flask-Login, converting Flask_login
     # unicode string to integer is necessary
@@ -59,6 +63,7 @@ def load_user(id):
 # default is just GET
 @oid.loginhandler
 # tells Flask-OpenID that this is our login view function
+
 def login():
 
     if g.user is not None and g.user.is_authenticated():
@@ -69,6 +74,7 @@ def login():
     form = LoginForm() # the class LoginForm() imported from forms.py
     
     if form.validate_on_submit():
+    # checks if it is a post request and whether it is valid
         session['remember_me'] = form.remember_me.data
         # once data is stored in flask.session it will be available during that request
         # and any future requests made by the same client 
@@ -82,6 +88,7 @@ def login():
 
 
 @oid.after_login
+
 def after_login(resp):
 	# resp contains information returned by the OpenID provider
 
@@ -121,13 +128,16 @@ def after_login(resp):
 
 
 @app.route('/logout')
+
 def logout():
 	logout_user()
 	# Flask_Login function to logout; that's all
 	return redirect(url_for('index'))
 
+
 @app.route('/user/<nickname>') # takes an argument nickname, and is passed to the user function
 @login_required
+
 def user(nickname):
     # looks for the user in database and if not found,; redirects
     user = User.query.filter_by(nickname = nickname).first()
@@ -144,3 +154,25 @@ def user(nickname):
     return render_template('user.html',
         user = user,
         posts = posts)
+
+
+@app.route('/edit', methods = ['GET', 'POST'])
+@login_required
+
+def edit():
+    form = EditForm()
+
+    if form.validate_on_submit():
+    # checks if it is a post request and whether it is valid
+        g.user.nickname = form.nickname.data
+        g.user.about_me = form.about_me.data
+        db.session.add(g.user)
+        db.session.commit()
+        flash("Your changes have been saved.")
+        return redirect(url_for('edit'))
+    else:
+        form.nickname.data = g.user.nickname
+        form.about_me.data = g.user.about_me
+
+    return render_template('edit.html',
+        form = form)
