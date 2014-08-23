@@ -1,8 +1,10 @@
+from datetime import datetime
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid # import the object app, db, lm, oid from __init__.py
 from forms import LoginForm
 from models import User, ROLE_USER, ROLE_ADMIN
+
 
 @app.before_request
 # any function decorated with before_request runs before the view function for every request
@@ -13,6 +15,11 @@ def before_request():
 	# gives better access; all requests can access the logged in user even inside templates
 	# a global within Flask_login just got made into a global within Flask the entire app
 
+    if g.user.is_authenticated():
+    # each time browser makes a request the time in the database will be updated
+        g.user.last_seen = datetime.utcnow()
+        db.session.add(g.user)
+        db.session.commit()
 
 @app.route('/')
 @app.route('/index')
@@ -63,7 +70,7 @@ def login():
     
     if form.validate_on_submit():
         session['remember_me'] = form.remember_me.data
-        # once data is stored in flask.session it will be available during the that request
+        # once data is stored in flask.session it will be available during that request
         # and any future requests made by the same client 
         return oid.try_login(form.openid.data, ask_for = ['nickname', 'email'])
         # openid function triggers authentication, takes 2 arguments; openid and list of data
