@@ -12,7 +12,7 @@ from models import User, ROLE_USER, ROLE_ADMIN
 def before_request():
 	# g is a global setup by Flask, current_user is a global setup by Flask_Login
 	# g global is a place to store/share data during the life of a request
-	g.user = current_user
+    g.user = current_user
 	# gives better access; all requests can access the logged in user even inside templates
 	# a global within Flask_login just got made into a global within Flask the entire app
 
