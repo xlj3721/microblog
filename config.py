@@ -8,6 +8,16 @@ OPENID_PROVIDERS = [
     { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
     { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }]
 
+# mail server settings
+MAIL_SERVER = 'localhost'
+MAIL_PORT = 25
+MAIL_USERNAME = 'altshift5372'
+MAIL_PASSWORD = 'whatever7'
+
+# administrator list
+ADMINS = ['altshift5372@aol.com']
+
+
 
 import os
 basedir = os.path.abspath(os.path.dirname(__file__)) 
