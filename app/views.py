@@ -176,3 +176,19 @@ def edit():
 
     return render_template('edit.html',
         form = form)
+
+
+@app.errorhandler(404)
+
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+
+def internal_error(error):
+    db.session.rollback() 
+    # if the exception was triggered by a database error, the database session will arrive
+    # in an invalid state, so need to roll it back in case a working session is needed to 
+    # render the template below
+    return render_template('500.html'), 500
