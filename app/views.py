@@ -101,17 +101,19 @@ def after_login(resp):
 	# searches the db for the provided email
 
 	if user is None:
-	# if nothing found, new user is added
-		nickname = resp.nickname
-		
-		if nickname is None or nickname == "":
-		# if the new user doesn't have nickname, one is pulled from their email address
-			nickname = resp.email.split('@')[0] # name@email.com becomes ['name', 'email.com']
+    # if nothing found, new user is added
+        nickname = resp.nickname
 
-		user = User(nickname = nickname, email = resp.email, role = ROLE_USER)
-		# added into the db through User() imported from models.py 
-		db.session.add(user)
-		db.session.commit()
+        if nickname is None or nickname == "":
+        # if the new user doesn't have nickname, one is pulled from their email address
+            nickname = resp.email.split('@')[0] # name@email.com becomes ['name', 'email.com']
+        
+        nickname = User.make_unique_nickname(nickname) 
+        # calls a User method to make a unique name if nickname is not already unique
+        user = User(nickname = nickname, email = resp.email, role = ROLE_USER)
+    	# added into the db through User() imported from models.py 
+    	db.session.add(user)
+    	db.session.commit()
 
 	remember_me = False
 	# sets the LoginForm().remember_me

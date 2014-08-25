@@ -22,6 +22,23 @@ class User(db.Model):
 		# returns the url of the user's avatar image with some options
 		return 'http://www.gravatar.com/avatar/' + md5(self.email).hexdigest() + '?d=mm&s=' + str(size)
 
+	@staticmethod
+	def make_unique_nickname(nickname):
+		if User.query.filter_by(nickname = nickname).first() == None:
+		# checks whether nickname is already unique
+			return nickname
+		else:
+		# otherwise adds a number at the end of nickname until the name is unique
+			version = 2
+			while True:
+				new_nickname = nickname + str(version)
+				if User.query.filter_by(nickname = new_nickname).first() == None:
+					break
+				else:
+					version += 1
+			return new_nickname
+
+
 	""" methods for the Flask_login extension """
 
 	def is_authenticated(self):
