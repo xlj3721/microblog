@@ -101,9 +101,9 @@ def after_login(resp):
 	# searches the db for the provided email
 
 	if user is None:
-    # if nothing found, new user is added
-        nickname = resp.nickname
-
+        # if nothing found, new user is added
+            nickname = resp.nickname
+        
         if nickname is None or nickname == "":
         # if the new user doesn't have nickname, one is pulled from their email address
             nickname = resp.email.split('@')[0] # name@email.com becomes ['name', 'email.com']
@@ -162,7 +162,7 @@ def user(nickname):
 @login_required
 
 def edit():
-    form = EditForm()
+    form = EditForm(g.user.nickname)
 
     if form.validate_on_submit():
     # checks if it is a post request and whether it is valid

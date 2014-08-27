@@ -22,7 +22,7 @@ class User(db.Model):
 		# returns the url of the user's avatar image with some options
 		return 'http://www.gravatar.com/avatar/' + md5(self.email).hexdigest() + '?d=mm&s=' + str(size)
 
-	@staticmethod
+	@staticmethod # static method because this operation does not apply to any particular instance of the class
 	def make_unique_nickname(nickname):
 		if User.query.filter_by(nickname = nickname).first() == None:
 		# checks whether nickname is already unique
