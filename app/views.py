@@ -92,18 +92,18 @@ def login():
 def after_login(resp):
 	# resp contains information returned by the OpenID provider
 
-	if resp.email is None or resp.email == "":
-	# checking for email otherwise cannot log the user in
-		flash("Invalid login. Please try again.")
-		return redirect(url_for('login'))
+    if resp.email is None or resp.email == "":
+    # checking for email otherwise cannot log the user in
+        flash("Invalid login. Please try again.")
+        return redirect(url_for('login'))
 
-	user = User.query.filter_by(email = resp.email).first()
-	# searches the db for the provided email
+    user = User.query.filter_by(email = resp.email).first()
+    # searches the db for the provided email
 
-	if user is None:
-        # if nothing found, new user is added
-            nickname = resp.nickname
-        
+    if user is None:
+    # if nothing found, new user is added
+        nickname = resp.nickname
+      
         if nickname is None or nickname == "":
         # if the new user doesn't have nickname, one is pulled from their email address
             nickname = resp.email.split('@')[0] # name@email.com becomes ['name', 'email.com']
@@ -112,8 +112,8 @@ def after_login(resp):
         # calls a User method to make a unique name if nickname is not already unique
         user = User(nickname = nickname, email = resp.email, role = ROLE_USER)
     	# added into the db through User() imported from models.py 
-    	db.session.add(user)
-    	db.session.commit()
+        db.session.add(user)
+        db.session.commit()
 
 	remember_me = False
 	# sets the LoginForm().remember_me

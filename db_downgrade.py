@@ -1,4 +1,4 @@
-#! flask_venv/bin/python
+#! /usr/bin/env python
 
 from migrate.versioning import api
 from config import SQLALCHEMY_DATABASE_URI

@@ -1,4 +1,4 @@
-#! flask_venv/bin/python
+#! /usr/bin/env python
 """
     A script that creates a database; the specific pathnames are imported from the 
     config file. Supports migrations. 
